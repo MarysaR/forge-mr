@@ -1,0 +1,6 @@
+# Dépendances Ansible Galaxy (rôles et collections externes) du projet ForgeMR.
+#
+# Fichier volontairement vide à ce stade : aucune dépendance externe n'est
+# nécessaire pour la v0.0.1. Il est créé dès maintenant car il constitue le
+# point d'extension naturel du projet le jour où une dépendance externe
+# deviendra nécessaire.

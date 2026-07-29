@@ -1,0 +1,16 @@
+# Ansible
+*.retry
+.vault_pass*
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Éditeurs / OS
+.vscode/
+.idea/
+*.swp
+.DS_Store
+.claude/
