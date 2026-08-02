@@ -18,6 +18,23 @@ Version actuelle : `v0.0.1` — mise en place des fondations du dépôt (structu
 
 Première implémentation pour Ubuntu 26.04 LTS, avec une compatibilité recherchée pour TUXEDO OS et WebFAI.
 
+## Prérequis
+
+ForgeMR nécessite que les outils suivants soient déjà installés sur la machine :
+
+- Git ;
+- Ansible (`ansible-core` ou `Ansible`).
+
+Ce sont des dépendances externes : ForgeMR ne les installe pas lui-même.
+
+Vérifier leur présence :
+
+```bash
+git --version
+ansible --version
+ansible-playbook --version
+```
+
 ## État du projet
 
 Les rôles (`common`, `shell`, `development`, `devops`, `desktop`, `dotfiles`) ne sont pas encore implémentés : seule l'architecture du dépôt est posée à ce stade.
