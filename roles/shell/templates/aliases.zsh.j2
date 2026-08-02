@@ -5,3 +5,8 @@
 # Le paquet apt de fd (fd-find) installe le binaire sous le nom fdfind ; cet alias restaure le nom attendu.
 alias fd='fdfind'
 {% endif %}
+
+{% if 'bat' in shell_tools %}
+# Le paquet apt de bat installe le binaire sous le nom batcat ; cet alias restaure le nom attendu.
+alias bat='batcat'
+{% endif %}
