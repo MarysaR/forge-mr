@@ -1,0 +1,6 @@
+---
+# Playbook officiel de validation du rôle shell.
+- name: Valider le rôle shell
+  hosts: localhost
+  roles:
+    - shell

@@ -1,0 +1,67 @@
+---
+# Configure les composants installés par install.yml (zsh, Oh My Zsh, tmux, Neovim, mise).
+# Aucune installation n'est réalisée ici (cf. install.yml).
+
+# ============================================================
+# Configuration de zsh
+# ============================================================
+# zshrc.j2 contient l'intégralité de la configuration zsh du rôle (chargement d'Oh My Zsh,
+# thème, plugins, activation de mise, chargement des alias). aliases.zsh.j2 est un fichier
+# séparé, dédié uniquement aux alias déposés par le rôle (ex. correspondance fd -> fdfind),
+# pour ne pas surcharger .zshrc. Aucun autre template (exports, functions, plugins...) n'est
+# prévu tant qu'un besoin concret ne le justifie (YAGNI) ; le cas échéant, il serait ajouté
+# et chargé depuis .zshrc de la même façon.
+
+- name: Créer le répertoire de configuration zsh
+  ansible.builtin.file:
+    path: "{{ ansible_env.HOME }}/.config/zsh"
+    state: directory
+    mode: "0755"
+
+- name: Déployer les alias zsh du rôle
+  ansible.builtin.template:
+    src: aliases.zsh.j2
+    dest: "{{ ansible_env.HOME }}/.config/zsh/aliases.zsh"
+    mode: "0644"
+
+- name: Déployer le fichier .zshrc
+  ansible.builtin.template:
+    src: zshrc.j2
+    dest: "{{ ansible_env.HOME }}/.zshrc"
+    mode: "0644"
+
+- name: Définir zsh comme shell par défaut de l'utilisateur
+  ansible.builtin.user:
+    name: "{{ ansible_user_id }}"
+    shell: "{{ shell_zsh_path }}"
+  become: true
+  when: shell_set_default
+
+# ============================================================
+# Configuration de tmux
+# ============================================================
+
+- name: Déployer la configuration de base de tmux
+  ansible.builtin.template:
+    src: tmux.conf.j2
+    dest: "{{ ansible_env.HOME }}/.tmux.conf"
+    mode: "0644"
+  when: "'tmux' in shell_tools"
+
+# ============================================================
+# Configuration de Neovim
+# ============================================================
+
+- name: Créer le répertoire de configuration Neovim
+  ansible.builtin.file:
+    path: "{{ ansible_env.HOME }}/.config/nvim"
+    state: directory
+    mode: "0755"
+  when: shell_install_neovim
+
+- name: Déployer la configuration minimaliste de Neovim
+  ansible.builtin.template:
+    src: init.vim.j2
+    dest: "{{ ansible_env.HOME }}/.config/nvim/init.vim"
+    mode: "0644"
+  when: shell_install_neovim

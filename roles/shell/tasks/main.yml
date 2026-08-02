@@ -1,0 +1,15 @@
+---
+# Point d'entrée du rôle shell.
+# Ce fichier orchestre uniquement l'exécution des sous-fichiers ; il ne contient aucune logique métier.
+
+# Installe les paquets et outils du rôle (zsh, Oh My Zsh, Powerlevel10k, Neovim, outils CLI, mise...).
+- name: Installer les composants du rôle shell
+  ansible.builtin.import_tasks: install.yml
+
+# Met en place la configuration du shell (fichiers déposés, activation, shell par défaut).
+- name: Configurer le shell
+  ansible.builtin.import_tasks: configure.yml
+
+# Vérifie que l'environnement shell mis en place respecte les critères d'acceptation du rôle.
+- name: Vérifier l'environnement shell
+  ansible.builtin.import_tasks: verify.yml
