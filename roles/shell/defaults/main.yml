@@ -1,0 +1,33 @@
+---
+# Variables par défaut du rôle shell.
+# Chaque variable ci-dessous correspond à un point de personnalisation réel du rôle (cf. docs/roles/shell.md).
+# Seules les options réellement personnalisables sont exposées ici ; les choix d'implémentation
+# (chemins, templates, mécanismes internes...) restent internes au rôle, conformément aux principes KISS et YAGNI.
+
+# Change le shell par défaut de l'utilisateur vers zsh une fois installé.
+# À désactiver si zsh doit être disponible sans devenir le shell ouvert automatiquement dans un nouveau terminal.
+shell_set_default: true
+
+# Installe le framework Oh My Zsh, qui structure la configuration de zsh (plugins, thèmes).
+shell_install_oh_my_zsh: true
+
+# Liste des plugins Oh My Zsh à activer.
+shell_plugins:
+  - git
+
+# Liste des outils CLI modernes à installer aux côtés du shell.
+# Retirer un outil de cette liste pour ne pas l'installer.
+shell_tools:
+  - fzf
+  - bat
+  - eza
+  - ripgrep
+  - fd
+  - zoxide
+  - tmux
+
+# Installe Neovim avec la configuration minimaliste fournie par le rôle.
+shell_install_neovim: true
+
+# Installe mise, le gestionnaire de runtimes retenu par ForgeMR (cf. ADR-0005).
+shell_install_mise: true

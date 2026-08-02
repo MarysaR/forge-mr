@@ -1,0 +1,198 @@
+---
+# Vérifie que l'environnement shell mis en place respecte les critères d'acceptation du rôle.
+# Ne modifie aucun état du système : uniquement des lectures (stat, slurp, getent) et des assertions.
+
+# ============================================================
+# zsh
+# ============================================================
+
+- name: Vérifier l'exécutable zsh
+  ansible.builtin.stat:
+    path: "{{ shell_zsh_path }}"
+  register: shell_verify_zsh_bin
+
+- name: Vérifier le fichier .zshrc
+  ansible.builtin.stat:
+    path: "{{ ansible_env.HOME }}/.zshrc"
+  register: shell_verify_zshrc
+
+- name: Vérifier le répertoire de configuration zsh
+  ansible.builtin.stat:
+    path: "{{ ansible_env.HOME }}/.config/zsh"
+  register: shell_verify_zsh_config_dir
+
+- name: Vérifier le fichier d'alias zsh
+  ansible.builtin.stat:
+    path: "{{ ansible_env.HOME }}/.config/zsh/aliases.zsh"
+  register: shell_verify_aliases
+
+- name: Vérifier les critères d'acceptation de zsh
+  ansible.builtin.assert:
+    that:
+      - shell_verify_zsh_bin.stat.exists
+      - shell_verify_zshrc.stat.exists
+      - shell_verify_zsh_config_dir.stat.exists
+      - shell_verify_zsh_config_dir.stat.isdir
+      - shell_verify_aliases.stat.exists
+    fail_msg: "zsh n'est pas correctement installé ou configuré."
+    success_msg: "zsh est correctement installé et configuré."
+
+- name: Lire les fichiers zsh générés par le rôle
+  ansible.builtin.slurp:
+    path: "{{ item }}"
+  register: shell_verify_zsh_generated_content
+  loop:
+    - "{{ ansible_env.HOME }}/.zshrc"
+    - "{{ ansible_env.HOME }}/.config/zsh/aliases.zsh"
+
+- name: Vérifier que les fichiers zsh sont bien ceux générés par ForgeMR
+  ansible.builtin.assert:
+    that:
+      - "'Fichier généré par le rôle shell de ForgeMR' in (item.content | b64decode)"
+    fail_msg: "{{ item.item }} n'est pas le fichier généré par le rôle shell de ForgeMR."
+    success_msg: "{{ item.item }} est bien celui généré par le rôle shell de ForgeMR."
+  loop: "{{ shell_verify_zsh_generated_content.results }}"
+
+- name: Récupérer le shell par défaut de l'utilisateur
+  ansible.builtin.getent:
+    database: passwd
+    key: "{{ ansible_user_id }}"
+  when: shell_set_default
+
+- name: Vérifier que zsh est le shell par défaut de l'utilisateur
+  ansible.builtin.assert:
+    that:
+      - getent_passwd[ansible_user_id][5] == shell_zsh_path
+    fail_msg: "shell_set_default est activé mais zsh n'est pas le shell par défaut de l'utilisateur."
+    success_msg: "zsh est correctement défini comme shell par défaut de l'utilisateur."
+  when: shell_set_default
+
+# ============================================================
+# Oh My Zsh
+# ============================================================
+
+- name: Vérifier le répertoire Oh My Zsh
+  ansible.builtin.stat:
+    path: "{{ ansible_env.HOME }}/.oh-my-zsh"
+  register: shell_verify_omz
+  when: shell_install_oh_my_zsh
+
+- name: Vérifier le thème Powerlevel10k
+  ansible.builtin.stat:
+    path: "{{ ansible_env.HOME }}/.oh-my-zsh/custom/themes/powerlevel10k"
+  register: shell_verify_p10k
+  when: shell_install_oh_my_zsh
+
+- name: Vérifier les critères d'acceptation d'Oh My Zsh
+  ansible.builtin.assert:
+    that:
+      - shell_verify_omz.stat.exists
+      - shell_verify_omz.stat.isdir
+      - shell_verify_p10k.stat.exists
+    fail_msg: "Oh My Zsh ou le thème Powerlevel10k ne sont pas correctement installés."
+    success_msg: "Oh My Zsh et le thème Powerlevel10k sont correctement installés."
+  when: shell_install_oh_my_zsh
+
+# ============================================================
+# tmux
+# ============================================================
+
+- name: Vérifier l'exécutable tmux
+  ansible.builtin.stat:
+    path: "{{ shell_tmux_path }}"
+  register: shell_verify_tmux_bin
+  when: "'tmux' in shell_tools"
+
+- name: Vérifier le fichier de configuration tmux
+  ansible.builtin.stat:
+    path: "{{ ansible_env.HOME }}/.tmux.conf"
+  register: shell_verify_tmux_conf
+  when: "'tmux' in shell_tools"
+
+- name: Vérifier les critères d'acceptation de tmux
+  ansible.builtin.assert:
+    that:
+      - shell_verify_tmux_bin.stat.exists
+      - shell_verify_tmux_conf.stat.exists
+    fail_msg: "tmux n'est pas correctement installé ou configuré."
+    success_msg: "tmux est correctement installé et configuré."
+  when: "'tmux' in shell_tools"
+
+- name: Lire le fichier .tmux.conf généré par le rôle
+  ansible.builtin.slurp:
+    path: "{{ ansible_env.HOME }}/.tmux.conf"
+  register: shell_verify_tmux_conf_content
+  when: "'tmux' in shell_tools"
+
+- name: Vérifier que .tmux.conf est bien celui généré par ForgeMR
+  ansible.builtin.assert:
+    that:
+      - "'Fichier généré par le rôle shell de ForgeMR' in (shell_verify_tmux_conf_content.content | b64decode)"
+    fail_msg: ".tmux.conf n'est pas le fichier généré par le rôle shell de ForgeMR."
+    success_msg: ".tmux.conf est bien celui généré par le rôle shell de ForgeMR."
+  when: "'tmux' in shell_tools"
+
+# ============================================================
+# Neovim
+# ============================================================
+
+- name: Vérifier l'exécutable Neovim
+  ansible.builtin.stat:
+    path: "{{ shell_nvim_path }}"
+  register: shell_verify_nvim_bin
+  when: shell_install_neovim
+
+- name: Vérifier le répertoire de configuration Neovim
+  ansible.builtin.stat:
+    path: "{{ ansible_env.HOME }}/.config/nvim"
+  register: shell_verify_nvim_dir
+  when: shell_install_neovim
+
+- name: Vérifier le fichier de configuration Neovim
+  ansible.builtin.stat:
+    path: "{{ ansible_env.HOME }}/.config/nvim/init.vim"
+  register: shell_verify_nvim_conf
+  when: shell_install_neovim
+
+- name: Vérifier les critères d'acceptation de Neovim
+  ansible.builtin.assert:
+    that:
+      - shell_verify_nvim_bin.stat.exists
+      - shell_verify_nvim_dir.stat.exists
+      - shell_verify_nvim_dir.stat.isdir
+      - shell_verify_nvim_conf.stat.exists
+    fail_msg: "Neovim n'est pas correctement installé ou configuré."
+    success_msg: "Neovim est correctement installé et configuré."
+  when: shell_install_neovim
+
+- name: Lire le fichier init.vim généré par le rôle
+  ansible.builtin.slurp:
+    path: "{{ ansible_env.HOME }}/.config/nvim/init.vim"
+  register: shell_verify_nvim_conf_content
+  when: shell_install_neovim
+
+- name: Vérifier que init.vim est bien celui généré par ForgeMR
+  ansible.builtin.assert:
+    that:
+      - "'Fichier généré par le rôle shell de ForgeMR' in (shell_verify_nvim_conf_content.content | b64decode)"
+    fail_msg: "init.vim n'est pas le fichier généré par le rôle shell de ForgeMR."
+    success_msg: "init.vim est bien celui généré par le rôle shell de ForgeMR."
+  when: shell_install_neovim
+
+# ============================================================
+# mise
+# ============================================================
+
+- name: Vérifier l'exécutable mise
+  ansible.builtin.stat:
+    path: "{{ shell_mise_path }}"
+  register: shell_verify_mise_bin
+  when: shell_install_mise
+
+- name: Vérifier les critères d'acceptation de mise
+  ansible.builtin.assert:
+    that:
+      - shell_verify_mise_bin.stat.exists
+    fail_msg: "Le gestionnaire de runtimes mise n'est pas correctement installé."
+    success_msg: "Le gestionnaire de runtimes mise est correctement installé."
+  when: shell_install_mise

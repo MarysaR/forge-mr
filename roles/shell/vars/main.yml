@@ -1,0 +1,20 @@
+---
+# Variables internes du rôle.
+# Elles décrivent des choix d'implémentation et ne sont pas destinées
+# à être personnalisées par l'utilisateur.
+
+# Correspondance entre le nom d'un outil de shell_tools et le nom réel du paquet apt, lorsqu'il diffère.
+shell_tools_apt_packages:
+  fd: fd-find
+
+# Chemins des exécutables installés via apt, identiques sur les distributions officiellement
+# supportées par ForgeMR (Ubuntu 26.04 LTS, TUXEDO OS).
+shell_zsh_path: /usr/bin/zsh
+shell_tmux_path: /usr/bin/tmux
+shell_nvim_path: /usr/bin/nvim
+shell_mise_path: /usr/bin/mise
+
+# Thème Oh My Zsh déployé par le rôle. Figé à Powerlevel10k pour la v0.0.1 : le rôle installe
+# et vérifie ce thème sans condition dès que shell_install_oh_my_zsh est activé (cf. install.yml,
+# verify.yml), il n'y a donc pas de choix de thème réel à exposer tant que ce n'est pas le cas.
+shell_oh_my_zsh_theme: powerlevel10k/powerlevel10k

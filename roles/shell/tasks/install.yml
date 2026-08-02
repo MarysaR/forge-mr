@@ -1,0 +1,85 @@
+---
+# Installe les composants du rôle shell : zsh, Oh My Zsh, Powerlevel10k, Neovim, mise et les outils CLI.
+# Aucune configuration n'est réalisée ici (cf. configure.yml).
+
+# Met à jour le cache apt une seule fois pour l'ensemble des installations de ce fichier.
+- name: Mettre à jour le cache apt
+  ansible.builtin.apt:
+    update_cache: true
+    cache_valid_time: 3600
+  become: true
+
+# --- Paquets système ---
+# git est requis par les clones Oh My Zsh/Powerlevel10k ci-dessous ; python3-debian est requis
+# par le module deb822_repository utilisé plus bas pour ajouter le dépôt apt de mise.
+
+- name: Installer les paquets système du rôle
+  ansible.builtin.apt:
+    name: "{{ item }}"
+    state: present
+  become: true
+  loop:
+    - zsh
+    - git
+    - python3-debian
+
+- name: Installer Neovim
+  ansible.builtin.apt:
+    name: neovim
+    state: present
+  become: true
+  when: shell_install_neovim
+
+- name: Installer les outils CLI du shell
+  ansible.builtin.apt:
+    name: "{{ shell_tools_apt_packages[item] | default(item) }}"
+    state: present
+  become: true
+  loop: "{{ shell_tools }}"
+
+# --- Oh My Zsh et thème ---
+
+- name: Installer Oh My Zsh
+  ansible.builtin.git:
+    repo: https://github.com/ohmyzsh/ohmyzsh.git
+    dest: "{{ ansible_env.HOME }}/.oh-my-zsh"
+    depth: 1
+  when: shell_install_oh_my_zsh
+
+- name: Installer le thème Powerlevel10k
+  ansible.builtin.git:
+    repo: https://github.com/romkatv/powerlevel10k.git
+    dest: "{{ ansible_env.HOME }}/.oh-my-zsh/custom/themes/powerlevel10k"
+    depth: 1
+  when: shell_install_oh_my_zsh
+
+# --- mise ---
+# Non disponible dans les dépôts officiels Ubuntu/Debian. Le PPA ppa:jdxcode/mise (Launchpad),
+# utilisé initialement, ne publie plus de paquets pour les suites Ubuntu récentes (ex. noble) :
+# son index Packages répond 404, d'où l'échec "No package matching 'mise' is available".
+# Le dépôt apt officiel du projet (https://mise.jdx.dev/deb) est la méthode d'installation
+# actuellement recommandée par mise et reste maintenu indépendamment des suites Ubuntu.
+
+- name: Ajouter le dépôt apt officiel de mise
+  ansible.builtin.deb822_repository:
+    name: mise
+    types: deb
+    uris: https://mise.jdx.dev/deb
+    suites: stable
+    components: main
+    signed_by: https://mise.jdx.dev/gpg-key.pub
+  become: true
+  when: shell_install_mise
+
+- name: Mettre à jour le cache apt après l'ajout du dépôt mise
+  ansible.builtin.apt:
+    update_cache: true
+  become: true
+  when: shell_install_mise
+
+- name: Installer mise
+  ansible.builtin.apt:
+    name: mise
+    state: present
+  become: true
+  when: shell_install_mise
