@@ -24,7 +24,7 @@ Construire progressivement un projet :
 - maintenable ;
 - évolutif.
 
-La première implémentation cible Ubuntu 26.04 LTS, avec une compatibilité recherchée pour TUXEDO OS et WebFAI.
+La première implémentation cible Ubuntu 24.04 LTS, avec une compatibilité recherchée pour TUXEDO OS et WebFAI.
 
 L'architecture est conçue pour évoluer. Les implémentations arrivent progressivement.
 

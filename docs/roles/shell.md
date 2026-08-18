@@ -88,7 +88,7 @@ Le rôle vérifie :
 
 - Le thème Oh My Zsh est figé à Powerlevel10k : il n'est pas configurable.
 - Aucune personnalisation des alias, fonctions ou variables d'environnement du shell au-delà de ce que le rôle fournit lui-même.
-- Le rôle cible les distributions basées sur apt officiellement supportées par ForgeMR (Ubuntu 26.04 LTS, TUXEDO OS) ; aucune autre famille de distribution n'est prise en charge.
+- Le rôle cible les distributions basées sur apt officiellement supportées par ForgeMR (Ubuntu 24.04 LTS, TUXEDO OS) ; aucune autre famille de distribution n'est prise en charge.
 
 ## Évolutions envisagées
 

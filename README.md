@@ -16,7 +16,7 @@ Version actuelle : `v0.0.1` — mise en place des fondations du dépôt (structu
 
 ## Cible
 
-Première implémentation pour Ubuntu 26.04 LTS, avec une compatibilité recherchée pour TUXEDO OS et WebFAI.
+Première implémentation pour Ubuntu 24.04 LTS, avec une compatibilité recherchée pour TUXEDO OS et WebFAI.
 
 ## Prérequis
 
