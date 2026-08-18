@@ -37,4 +37,4 @@ ansible-playbook --version
 
 ## État du projet
 
-Les rôles (`common`, `shell`, `development`, `devops`, `desktop`, `dotfiles`) ne sont pas encore implémentés : seule l'architecture du dépôt est posée à ce stade.
+Le rôle `shell` est implémenté (cf. [docs/roles/shell.md](./docs/roles/shell.md)). Les autres rôles (`common`, `development`, `devops`, `desktop`, `dotfiles`) ne sont pas encore implémentés.
