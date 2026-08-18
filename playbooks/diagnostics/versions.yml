@@ -1,0 +1,99 @@
+---
+# Playbook de diagnostic : affiche les versions des composants gérés par le rôle shell.
+# Lecture seule : aucune tâche de ce playbook ne modifie l'état du système (cf. docs/roles/shell.md
+# pour les critères d'acceptation, vérifiés séparément par roles/shell/tasks/verify.yml).
+# Ce fichier ne dépend d'aucune tâche du rôle shell : il réutilise uniquement ses variables de
+# chemins (roles/shell/vars/main.yml) pour éviter de dupliquer des chemins déjà définis ailleurs.
+
+- name: Diagnostiquer les versions des composants du rôle shell
+  hosts: localhost
+  vars_files:
+    - ../../roles/shell/vars/main.yml
+  vars:
+    # Composants exposant leur version via leur exécutable. `line` indique, dans la sortie de
+    # la commande, l'index (0 par défaut) de la ligne contenant réellement le numéro de version :
+    # eza affiche d'abord une bannière de présentation, le numéro n'arrivant qu'en ligne 2.
+    diagnostics_version_components:
+      - name: Git
+        cmd: git --version
+      - name: zsh
+        cmd: "{{ shell_zsh_path }} --version"
+      - name: Neovim
+        cmd: "{{ shell_nvim_path }} --version"
+      - name: fzf
+        cmd: fzf --version
+      - name: bat
+        cmd: batcat --version
+      - name: eza
+        cmd: eza --version
+        line: 1
+      - name: ripgrep
+        cmd: rg --version
+      - name: fd
+        cmd: fdfind --version
+      - name: zoxide
+        cmd: zoxide --version
+      - name: tmux
+        cmd: "{{ shell_tmux_path }} -V"
+      - name: mise
+        cmd: "{{ shell_mise_path }} --version"
+
+    # Composants installés par clone Git peu profond (depth: 1) : sans tag, seul le commit
+    # identifie la version installée (cf. roles/shell/tasks/install.yml).
+    diagnostics_git_commit_components:
+      - name: Oh My Zsh
+        path: "{{ ansible_env.HOME }}/.oh-my-zsh"
+      - name: Powerlevel10k
+        path: "{{ ansible_env.HOME }}/.oh-my-zsh/custom/themes/powerlevel10k"
+
+  tasks:
+    - name: Relever la version des composants installés via leur exécutable
+      ansible.builtin.command: "{{ item.cmd }}"
+      loop: "{{ diagnostics_version_components }}"
+      loop_control:
+        label: "{{ item.name }}"
+      register: diagnostics_version_results
+      changed_when: false
+      failed_when: false
+
+    - name: Relever le commit Git des composants installés par clone
+      ansible.builtin.command: git rev-parse --short HEAD
+      args:
+        chdir: "{{ item.path }}"
+      loop: "{{ diagnostics_git_commit_components }}"
+      loop_control:
+        label: "{{ item.name }}"
+      register: diagnostics_git_commit_results
+      changed_when: false
+      failed_when: false
+
+    - name: Afficher l'en-tête des composants système
+      ansible.builtin.debug:
+        msg: "=== Composants système ==="
+
+    - name: Afficher les versions des composants
+      # Isole le numéro de version (ex. « 2.43.0 ») dans la ligne de sortie retenue, pour ne
+      # plus répéter le nom de l'outil déjà affiché avant les deux-points (ex. « git version
+      # 2.43.0 » -> « 2.43.0 »). Une seule regex générique, appliquée à tous les composants :
+      # si aucun numéro de version n'est trouvé, la ligne brute est affichée telle quelle.
+      vars:
+        diagnostics_raw_line: "{{ item.stdout_lines[item.item.line | default(0)] if (item.rc == 0 and item.stdout_lines) else '' }}"
+        diagnostics_version_value: '{{ diagnostics_raw_line | regex_search("[0-9]+(\.[0-9]+)+") | default(diagnostics_raw_line, true) }}'
+      ansible.builtin.debug:
+        msg: >-
+          {{ item.item.name }} :
+          {{ diagnostics_version_value if (item.rc == 0 and item.stdout_lines) else 'non installé ou introuvable' }}
+      loop: "{{ diagnostics_version_results.results }}"
+      loop_control:
+        label: "{{ item.item.name }}"
+
+    - name: Afficher l'en-tête des dépôts Git
+      ansible.builtin.debug:
+        msg: "=== Dépôts Git ==="
+
+    - name: Afficher le commit Git des composants installés par clone
+      ansible.builtin.debug:
+        msg: "{{ item.item.name }} (commit) : {{ item.stdout if item.rc == 0 else 'non installé ou introuvable' }}"
+      loop: "{{ diagnostics_git_commit_results.results }}"
+      loop_control:
+        label: "{{ item.item.name }}"
