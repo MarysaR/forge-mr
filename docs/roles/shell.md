@@ -101,3 +101,4 @@ Le rôle vérifie :
 - [ADR-0003 — Principes de conception des rôles Ansible](../adr/0003-principes-conception-roles.md)
 - [ADR-0004 — Gestion de la configuration des rôles](../adr/0004-gestion-configuration-roles.md)
 - [ADR-0005 — Gestionnaire de runtimes](../adr/0005-gestionnaire-de-runtimes.md)
+- [ADR-0006 — Périmètre des rôles pour la v0.0.1](../adr/0006-perimetre-des-roles.md)
