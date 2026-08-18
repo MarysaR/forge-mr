@@ -8,7 +8,7 @@ shell_tools_apt_packages:
   fd: fd-find
 
 # Chemins des exécutables installés via apt, identiques sur les distributions officiellement
-# supportées par ForgeMR (Ubuntu 26.04 LTS, TUXEDO OS).
+# supportées par ForgeMR (Ubuntu 24.04 LTS, TUXEDO OS).
 shell_zsh_path: /usr/bin/zsh
 shell_tmux_path: /usr/bin/tmux
 shell_nvim_path: /usr/bin/nvim
