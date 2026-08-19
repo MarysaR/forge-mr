@@ -169,7 +169,7 @@ L'adoption de mise dans ForgeMR implique :
 
 - l'installation de mise remplace celle de nvm dans les rôles concernés ;
 - l'activation de mise (`mise activate`) est ajoutée à la configuration du shell mise en place par le rôle `shell` ;
-- le futur rôle `development` s'appuiera sur mise pour déclarer les versions d'outils dont il a besoin, plutôt que sur des gestionnaires spécifiques à chaque langage ; le rôle `devops`, désormais implémenté, n'en a pas eu besoin (ses outils ne sont pas des runtimes de langage) ;
+- le rôle `development`, désormais implémenté, s'appuie sur mise pour déclarer les versions d'outils dont il a besoin (Node.js, pnpm), plutôt que sur des gestionnaires spécifiques à chaque langage ; le rôle `devops`, désormais implémenté, n'en a pas eu besoin (ses outils ne sont pas des runtimes de langage) ;
 - la terminologie « gestionnaire de runtimes » est désormais celle employée dans la documentation de ForgeMR pour désigner ce type d'outil (cf. [ADR-0005](../adr/0005-gestionnaire-de-runtimes.md)).
 
 ## Références officielles

@@ -56,7 +56,7 @@ Installer les runtimes directement via les paquets du système ou leurs installa
 ## Impacts sur ForgeMR
 
 - Le rôle `shell` installe mise et met en place son activation (`mise activate`) dans la configuration du shell, à la place de nvm.
-- Le futur rôle `development` utilisera mise comme mécanisme unique de gestion des runtimes. Le rôle `devops`, désormais implémenté sans mise, n'en avait pas besoin : ses outils (Docker, Kubernetes, sécurité) ne sont pas des runtimes de langage.
+- Le rôle `development`, désormais implémenté, utilise mise comme mécanisme unique de gestion de ses runtimes (Node.js, pnpm). Le rôle `devops`, désormais implémenté sans mise, n'en avait pas besoin : ses outils (Docker, Kubernetes, sécurité) ne sont pas des runtimes de langage.
 - La terminologie « gestionnaire de runtimes » devient la terminologie de référence dans la documentation de ForgeMR pour désigner ce type d'outil, et remplace toute mention antérieure de « gestionnaire de versions des outils ».
 
 ## Références

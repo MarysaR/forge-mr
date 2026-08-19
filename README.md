@@ -37,4 +37,4 @@ ansible-playbook --version
 
 ## État du projet
 
-Les rôles `shell` et `devops` sont implémentés (cf. [docs/roles/shell.md](./docs/roles/shell.md) et [docs/roles/devops.md](./docs/roles/devops.md)). Les autres rôles (`common`, `development`, `desktop`, `dotfiles`) ne sont pas encore implémentés.
+Les rôles `shell`, `devops` et `development` sont implémentés (cf. [docs/roles/shell.md](./docs/roles/shell.md), [docs/roles/devops.md](./docs/roles/devops.md) et [docs/roles/development.md](./docs/roles/development.md)). Les autres rôles (`common`, `desktop`, `dotfiles`) ne sont pas encore implémentés.

@@ -13,6 +13,7 @@ Il agit uniquement sur le compte existant qui exécute Ansible : pas de créatio
 
 Le rôle installe :
 
+- Git, prérequis technique du rôle (clonage d'Oh My Zsh et de Powerlevel10k) ;
 - zsh ;
 - Oh My Zsh et le thème Powerlevel10k, si l'option est activée ;
 - Neovim, si l'option est activée ;
@@ -94,7 +95,7 @@ Le rôle vérifie :
 
 - Rendre le thème Oh My Zsh configurable, si un besoin concret apparaît.
 - Étendre la personnalisation du shell (alias, fonctions, variables d'environnement propres à l'utilisateur).
-- Le futur rôle `development` s'appuiera sur mise pour la gestion de ses runtimes (cf. [ADR-0005](../adr/0005-gestionnaire-de-runtimes.md)) ; le rôle `devops`, désormais implémenté, n'en a pas eu besoin (ses outils ne sont pas des runtimes de langage).
+- Le rôle `development`, désormais implémenté, s'appuie sur mise pour la gestion de ses runtimes (Node.js, pnpm) (cf. [ADR-0005](../adr/0005-gestionnaire-de-runtimes.md)) ; le rôle `devops`, désormais implémenté, n'en a pas eu besoin (ses outils ne sont pas des runtimes de langage).
 
 ## Références
 
