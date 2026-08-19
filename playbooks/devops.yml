@@ -1,0 +1,6 @@
+---
+# Playbook officiel de validation du rôle devops.
+- name: Valider le rôle devops
+  hosts: localhost
+  roles:
+    - devops

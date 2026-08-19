@@ -1,0 +1,15 @@
+---
+# Point d'entrée du rôle devops.
+# Ce fichier orchestre uniquement l'exécution des sous-fichiers ; il ne contient aucune logique métier.
+
+# Installe les composants du rôle devops (Docker, Kubernetes, sécurité).
+- name: Installer les composants du rôle devops
+  ansible.builtin.import_tasks: install.yml
+
+# Configure les composants installés (groupe docker).
+- name: Configurer les composants du rôle devops
+  ansible.builtin.import_tasks: configure.yml
+
+# Vérifie que les outils mis en place respectent les critères d'acceptation du rôle devops.
+- name: Vérifier les composants du rôle devops
+  ansible.builtin.import_tasks: verify.yml

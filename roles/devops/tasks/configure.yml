@@ -1,0 +1,11 @@
+---
+# Configure les composants installés par install.yml.
+# Aucune installation n'est réalisée ici (cf. install.yml).
+
+- name: Ajouter l'utilisateur au groupe docker
+  ansible.builtin.user:
+    name: "{{ ansible_user_id }}"
+    groups: docker
+    append: true
+  become: true
+  when: devops_set_docker_group

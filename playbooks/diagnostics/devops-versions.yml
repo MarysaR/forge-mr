@@ -1,0 +1,54 @@
+---
+# Diagnostic en lecture seule des versions installées par le rôle devops.
+# Réutilise les chemins de roles/devops/vars/main.yml, sans les dupliquer.
+
+- name: Diagnostiquer les versions des composants du rôle devops
+  hosts: localhost
+  vars_files:
+    - ../../roles/devops/vars/main.yml
+  vars:
+    # Composants exposant leur version via leur exécutable.
+    diagnostics_version_components:
+      - name: Docker Engine
+        cmd: "{{ devops_docker_path }} --version"
+      - name: Docker Compose
+        cmd: "{{ devops_docker_path }} compose version"
+      - name: buildah
+        cmd: "{{ devops_buildah_path }} --version"
+      - name: kubectl
+        cmd: "{{ devops_kubectl_path }} version --client"
+      - name: Helm
+        cmd: "{{ devops_helm_path }} version"
+      - name: k9s
+        cmd: "{{ devops_k9s_path }} version"
+      - name: Minikube
+        cmd: "{{ devops_minikube_path }} version"
+      - name: trivy
+        cmd: "{{ devops_trivy_path }} --version"
+
+  tasks:
+    - name: Relever la version des composants installés via leur exécutable
+      ansible.builtin.command: "{{ item.cmd }}"
+      loop: "{{ diagnostics_version_components }}"
+      loop_control:
+        label: "{{ item.name }}"
+      register: diagnostics_version_results
+      changed_when: false
+      failed_when: false
+
+    - name: Afficher l'en-tête des composants système
+      ansible.builtin.debug:
+        msg: "=== Composants système ==="
+
+    - name: Afficher les versions des composants
+      # Recherche sur toute la sortie (pas une ligne fixe) : la bannière de k9s varie en taille.
+      vars:
+        diagnostics_raw_output: "{{ item.stdout if item.rc == 0 else '' }}"
+        diagnostics_version_value: '{{ diagnostics_raw_output | regex_search("[0-9]+(\.[0-9]+)+") | default(diagnostics_raw_output, true) }}'
+      ansible.builtin.debug:
+        msg: >-
+          {{ item.item.name }} :
+          {{ diagnostics_version_value if item.rc == 0 else 'non installé ou introuvable' }}
+      loop: "{{ diagnostics_version_results.results }}"
+      loop_control:
+        label: "{{ item.item.name }}"

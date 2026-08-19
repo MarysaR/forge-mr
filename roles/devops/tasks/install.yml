@@ -1,0 +1,138 @@
+---
+# Installe les composants du rôle devops. Aucune configuration ici (cf. configure.yml).
+
+- name: Mettre à jour le cache apt
+  ansible.builtin.apt:
+    update_cache: true
+    cache_valid_time: 3600
+  become: true
+
+# python3-debian est requis par deb822_repository (comme dans shell).
+
+- name: Installer les paquets système requis pour l'ajout de dépôts apt
+  ansible.builtin.apt:
+    name: "{{ item }}"
+    state: present
+  become: true
+  loop:
+    - ca-certificates
+    - python3-debian
+
+# --- Dépôts apt tiers ---
+
+- name: Ajouter le dépôt apt officiel de Docker
+  ansible.builtin.deb822_repository:
+    name: docker
+    types: deb
+    uris: https://download.docker.com/linux/ubuntu
+    suites: "{{ ansible_distribution_release }}"
+    components: stable
+    signed_by: https://download.docker.com/linux/ubuntu/gpg
+  become: true
+
+# Canal retenu : v1.33 (pkgs.k8s.io publie un dépôt par version mineure).
+
+- name: Ajouter le dépôt apt officiel de kubectl
+  ansible.builtin.deb822_repository:
+    name: kubernetes
+    types: deb
+    uris: https://pkgs.k8s.io/core:/stable:/v1.33/deb/
+    suites: /
+    signed_by: https://pkgs.k8s.io/core:/stable:/v1.33/deb/Release.key
+  become: true
+
+- name: Ajouter le dépôt apt officiel de trivy
+  ansible.builtin.deb822_repository:
+    name: trivy
+    types: deb
+    uris: https://aquasecurity.github.io/trivy-repo/deb
+    suites: "{{ ansible_distribution_release }}"
+    components: main
+    signed_by: https://aquasecurity.github.io/trivy-repo/deb/public.key
+  become: true
+
+- name: Mettre à jour le cache apt après l'ajout des dépôts
+  ansible.builtin.apt:
+    update_cache: true
+  become: true
+
+# --- Docker ---
+
+- name: Installer Docker Engine et le plugin Docker Compose V2
+  ansible.builtin.apt:
+    name:
+      - docker-ce
+      - docker-ce-cli
+      - containerd.io
+      - docker-compose-plugin
+    state: present
+  become: true
+
+# buildah vient des dépôts Ubuntu (universe), pas d'un dépôt tiers.
+
+- name: Installer buildah
+  ansible.builtin.apt:
+    name: buildah
+    state: present
+  become: true
+
+# --- Kubernetes ---
+
+- name: Installer kubectl
+  ansible.builtin.apt:
+    name: kubectl
+    state: present
+  become: true
+
+# Dépôt apt de Helm écarté : certificat baltocdn.com non reconnu (racine Let's Encrypt trop
+# récente). Script officiel « From Script » utilisé à la place.
+
+- name: Télécharger le script d'installation officiel de Helm
+  ansible.builtin.get_url:
+    url: https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
+    dest: /tmp/get-helm-3.sh
+    mode: "0700"
+
+- name: Installer Helm via son script officiel
+  ansible.builtin.command: /tmp/get-helm-3.sh
+  environment:
+    HELM_INSTALL_DIR: /usr/local/bin
+  args:
+    creates: "{{ devops_helm_path }}"
+  become: true
+
+# k9s n'a pas de dépôt apt officiel : .deb téléchargé depuis la dernière release GitHub.
+
+- name: Télécharger le paquet .deb de k9s
+  ansible.builtin.get_url:
+    url: "{{ devops_k9s_deb_url }}"
+    dest: /tmp/k9s.deb
+    mode: "0644"
+
+- name: Installer k9s
+  ansible.builtin.apt:
+    deb: /tmp/k9s.deb
+  become: true
+
+# Idem Minikube : pas de dépôt apt officiel, .deb recommandé par sa documentation.
+
+- name: Télécharger le paquet .deb de Minikube
+  ansible.builtin.get_url:
+    url: "{{ devops_minikube_deb_url }}"
+    dest: /tmp/minikube.deb
+    mode: "0644"
+  when: devops_install_minikube
+
+- name: Installer Minikube
+  ansible.builtin.apt:
+    deb: /tmp/minikube.deb
+  become: true
+  when: devops_install_minikube
+
+# --- Sécurité ---
+
+- name: Installer trivy
+  ansible.builtin.apt:
+    name: trivy
+    state: present
+  become: true

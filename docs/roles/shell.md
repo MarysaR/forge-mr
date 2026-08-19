@@ -94,7 +94,7 @@ Le rôle vérifie :
 
 - Rendre le thème Oh My Zsh configurable, si un besoin concret apparaît.
 - Étendre la personnalisation du shell (alias, fonctions, variables d'environnement propres à l'utilisateur).
-- Les futurs rôles `development` et `devops` s'appuieront sur mise pour la gestion de leurs runtimes (cf. [ADR-0005](../adr/0005-gestionnaire-de-runtimes.md)).
+- Le futur rôle `development` s'appuiera sur mise pour la gestion de ses runtimes (cf. [ADR-0005](../adr/0005-gestionnaire-de-runtimes.md)) ; le rôle `devops`, désormais implémenté, n'en a pas eu besoin (ses outils ne sont pas des runtimes de langage).
 
 ## Références
 

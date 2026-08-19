@@ -1,0 +1,104 @@
+---
+# Vérifie les critères d'acceptation du rôle devops. Lecture seule (stat, getent, assert).
+
+# ============================================================
+# Docker
+# ============================================================
+
+- name: Vérifier l'exécutable Docker Engine
+  ansible.builtin.stat:
+    path: "{{ devops_docker_path }}"
+  register: devops_verify_docker_bin
+
+# Plugin V2 (`docker compose`), jamais l'ancien binaire `docker-compose`.
+
+- name: Vérifier le plugin Docker Compose V2
+  ansible.builtin.stat:
+    path: "{{ devops_docker_compose_plugin_path }}"
+  register: devops_verify_docker_compose_plugin
+
+- name: Vérifier l'exécutable buildah
+  ansible.builtin.stat:
+    path: "{{ devops_buildah_path }}"
+  register: devops_verify_buildah_bin
+
+- name: Vérifier les critères d'acceptation de Docker
+  ansible.builtin.assert:
+    that:
+      - devops_verify_docker_bin.stat.exists
+      - devops_verify_docker_compose_plugin.stat.exists
+      - devops_verify_buildah_bin.stat.exists
+    fail_msg: "Docker Engine, le plugin Docker Compose V2 ou buildah ne sont pas correctement installés."
+    success_msg: "Docker Engine, le plugin Docker Compose V2 et buildah sont correctement installés."
+
+- name: Récupérer les membres du groupe docker
+  ansible.builtin.getent:
+    database: group
+    key: docker
+  when: devops_set_docker_group
+
+- name: Vérifier que l'utilisateur appartient au groupe docker
+  ansible.builtin.assert:
+    that:
+      - ansible_user_id in getent_group['docker'][2].split(',')
+    fail_msg: "devops_set_docker_group est activé mais l'utilisateur n'appartient pas au groupe docker."
+    success_msg: "L'utilisateur appartient correctement au groupe docker."
+  when: devops_set_docker_group
+
+# ============================================================
+# Kubernetes
+# ============================================================
+
+- name: Vérifier l'exécutable kubectl
+  ansible.builtin.stat:
+    path: "{{ devops_kubectl_path }}"
+  register: devops_verify_kubectl_bin
+
+- name: Vérifier l'exécutable Helm
+  ansible.builtin.stat:
+    path: "{{ devops_helm_path }}"
+  register: devops_verify_helm_bin
+
+- name: Vérifier l'exécutable k9s
+  ansible.builtin.stat:
+    path: "{{ devops_k9s_path }}"
+  register: devops_verify_k9s_bin
+
+- name: Vérifier les critères d'acceptation de kubectl, Helm et k9s
+  ansible.builtin.assert:
+    that:
+      - devops_verify_kubectl_bin.stat.exists
+      - devops_verify_helm_bin.stat.exists
+      - devops_verify_k9s_bin.stat.exists
+    fail_msg: "kubectl, Helm ou k9s ne sont pas correctement installés."
+    success_msg: "kubectl, Helm et k9s sont correctement installés."
+
+- name: Vérifier l'exécutable Minikube
+  ansible.builtin.stat:
+    path: "{{ devops_minikube_path }}"
+  register: devops_verify_minikube_bin
+  when: devops_install_minikube
+
+- name: Vérifier le critère d'acceptation de Minikube
+  ansible.builtin.assert:
+    that:
+      - devops_verify_minikube_bin.stat.exists
+    fail_msg: "devops_install_minikube est activé mais Minikube n'est pas correctement installé."
+    success_msg: "Minikube est correctement installé."
+  when: devops_install_minikube
+
+# ============================================================
+# Sécurité
+# ============================================================
+
+- name: Vérifier l'exécutable trivy
+  ansible.builtin.stat:
+    path: "{{ devops_trivy_path }}"
+  register: devops_verify_trivy_bin
+
+- name: Vérifier le critère d'acceptation de trivy
+  ansible.builtin.assert:
+    that:
+      - devops_verify_trivy_bin.stat.exists
+    fail_msg: "trivy n'est pas correctement installé."
+    success_msg: "trivy est correctement installé."
