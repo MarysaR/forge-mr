@@ -1,0 +1,9 @@
+---
+# Variables internes du rôle development.
+
+# Chemin de mise, installé par le rôle shell (development ne l'installe jamais).
+development_mise_path: /usr/bin/mise
+
+# Versions figées par ForgeMR (décision d'architecture, cf. docs/roles/development.md).
+development_node_version: "22"
+development_pnpm_version: "latest"

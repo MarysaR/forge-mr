@@ -1,0 +1,7 @@
+---
+# Configuration des composants du rôle development.
+
+- name: Confirmer qu'aucune configuration n'est nécessaire pour ce rôle
+  ansible.builtin.debug:
+    msg: "Aucune configuration nécessaire : Node.js et pnpm sont utilisables directement via mise."
+    verbosity: 1

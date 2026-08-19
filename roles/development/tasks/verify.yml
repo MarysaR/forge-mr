@@ -1,0 +1,26 @@
+---
+# Vérifie les critères d'acceptation du rôle development. Lecture seule (stat, assert).
+
+- name: Vérifier que mise est disponible
+  ansible.builtin.stat:
+    path: "{{ development_mise_path }}"
+  register: development_verify_mise_bin
+
+- name: Vérifier que Node.js est installé via mise
+  ansible.builtin.stat:
+    path: "{{ ansible_env.HOME }}/.local/share/mise/installs/node/{{ development_node_version }}"
+  register: development_verify_node
+
+- name: Vérifier que pnpm est installé via mise
+  ansible.builtin.stat:
+    path: "{{ ansible_env.HOME }}/.local/share/mise/installs/pnpm/{{ development_pnpm_version }}"
+  register: development_verify_pnpm
+
+- name: Vérifier les critères d'acceptation du rôle development
+  ansible.builtin.assert:
+    that:
+      - development_verify_mise_bin.stat.exists
+      - development_verify_node.stat.exists
+      - development_verify_pnpm.stat.exists
+    fail_msg: "mise, Node.js ou pnpm ne sont pas correctement installés."
+    success_msg: "mise, Node.js et pnpm sont correctement installés."

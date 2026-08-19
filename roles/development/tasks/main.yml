@@ -1,0 +1,15 @@
+---
+# Point d'entrée du rôle development.
+# Ce fichier orchestre uniquement l'exécution des sous-fichiers ; il ne contient aucune logique métier.
+
+# Installe Node.js et pnpm via mise.
+- name: Installer les composants du rôle development
+  ansible.builtin.import_tasks: install.yml
+
+# Configure les composants installés.
+- name: Configurer les composants du rôle development
+  ansible.builtin.import_tasks: configure.yml
+
+# Vérifie que les outils mis en place respectent les critères d'acceptation du rôle development.
+- name: Vérifier les composants du rôle development
+  ansible.builtin.import_tasks: verify.yml

@@ -1,0 +1,23 @@
+---
+# Installe Node.js et pnpm via mise. Ne touche jamais à mise lui-même (rôle shell).
+
+- name: Vérifier que mise est disponible
+  ansible.builtin.stat:
+    path: "{{ development_mise_path }}"
+  register: development_mise_bin
+
+- name: Échouer si mise n'est pas installé
+  ansible.builtin.assert:
+    that:
+      - development_mise_bin.stat.exists
+    fail_msg: "mise n'est pas installé : le rôle shell doit être appliqué avant development."
+
+- name: Installer Node.js via mise
+  ansible.builtin.command: "{{ development_mise_path }} install node@{{ development_node_version }}"
+  args:
+    creates: "{{ ansible_env.HOME }}/.local/share/mise/installs/node/{{ development_node_version }}"
+
+- name: Installer pnpm via mise
+  ansible.builtin.command: "{{ development_mise_path }} install pnpm@{{ development_pnpm_version }}"
+  args:
+    creates: "{{ ansible_env.HOME }}/.local/share/mise/installs/pnpm/{{ development_pnpm_version }}"
