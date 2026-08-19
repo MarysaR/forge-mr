@@ -32,7 +32,7 @@ Le choix détaillé, les critères de comparaison et les alternatives sont docum
 
 **nvm**
 
-nvm est un gestionnaire de versions limité à Node.js. Il ne répond qu'à une partie du besoin de ForgeMR : les futurs rôles `development` et `devops` nécessiteront d'autres langages, ce qui obligerait à ajouter un gestionnaire supplémentaire par langage. Cette approche a été écartée car elle multiplie les outils, les syntaxes et les mécanismes d'activation à maintenir, sans apporter de bénéfice par rapport à une solution unique.
+nvm est un gestionnaire de versions limité à Node.js. Il ne répond qu'à une partie du besoin de ForgeMR : le futur rôle `development` nécessitera d'autres langages, ce qui obligerait à ajouter un gestionnaire supplémentaire par langage. Cette approche a été écartée car elle multiplie les outils, les syntaxes et les mécanismes d'activation à maintenir, sans apporter de bénéfice par rapport à une solution unique.
 
 **Installation système**
 
@@ -56,7 +56,7 @@ Installer les runtimes directement via les paquets du système ou leurs installa
 ## Impacts sur ForgeMR
 
 - Le rôle `shell` installe mise et met en place son activation (`mise activate`) dans la configuration du shell, à la place de nvm.
-- Les futurs rôles `development` et `devops` utiliseront mise comme mécanisme unique de gestion des runtimes, sans que cela ne préjuge de leur implémentation détaillée.
+- Le futur rôle `development` utilisera mise comme mécanisme unique de gestion des runtimes. Le rôle `devops`, désormais implémenté sans mise, n'en avait pas besoin : ses outils (Docker, Kubernetes, sécurité) ne sont pas des runtimes de langage.
 - La terminologie « gestionnaire de runtimes » devient la terminologie de référence dans la documentation de ForgeMR pour désigner ce type d'outil, et remplace toute mention antérieure de « gestionnaire de versions des outils ».
 
 ## Références
