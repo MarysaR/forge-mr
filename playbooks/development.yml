@@ -1,0 +1,6 @@
+---
+# Playbook officiel de validation du rôle development.
+- name: Valider le rôle development
+  hosts: localhost
+  roles:
+    - development
