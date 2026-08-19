@@ -1,0 +1,42 @@
+---
+# Diagnostic en lecture seule des versions installées par le rôle development.
+# Réutilise les variables de roles/development/vars/main.yml, sans les dupliquer.
+
+- name: Diagnostiquer les versions des composants du rôle development
+  hosts: localhost
+  vars_files:
+    - ../../roles/development/vars/main.yml
+  vars:
+    diagnostics_version_components:
+      - name: mise
+        cmd: "{{ development_mise_path }} --version"
+      - name: Node.js
+        cmd: "{{ development_mise_path }} exec node@{{ development_node_version }} -- node --version"
+      - name: pnpm
+        cmd: "{{ development_mise_path }} exec pnpm@{{ development_pnpm_version }} -- pnpm --version"
+
+  tasks:
+    - name: Relever la version des composants installés via mise
+      ansible.builtin.command: "{{ item.cmd }}"
+      loop: "{{ diagnostics_version_components }}"
+      loop_control:
+        label: "{{ item.name }}"
+      register: diagnostics_version_results
+      changed_when: false
+      failed_when: false
+
+    - name: Afficher l'en-tête des composants système
+      ansible.builtin.debug:
+        msg: "=== Composants système ==="
+
+    - name: Afficher les versions des composants
+      vars:
+        diagnostics_raw_output: "{{ item.stdout if item.rc == 0 else '' }}"
+        diagnostics_version_value: '{{ diagnostics_raw_output | regex_search("[0-9]+(\.[0-9]+)+") | default(diagnostics_raw_output, true) }}'
+      ansible.builtin.debug:
+        msg: >-
+          {{ item.item.name }} :
+          {{ diagnostics_version_value if item.rc == 0 else 'non installé ou introuvable' }}
+      loop: "{{ diagnostics_version_results.results }}"
+      loop_control:
+        label: "{{ item.item.name }}"
