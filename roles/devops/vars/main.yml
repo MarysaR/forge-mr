@@ -1,0 +1,16 @@
+---
+# Variables internes du rôle, non destinées à être personnalisées.
+
+# URL "latest" officielles de Minikube et k9s (pas de dépôt apt pour ces deux outils).
+devops_minikube_deb_url: https://storage.googleapis.com/minikube/releases/latest/minikube_latest_amd64.deb
+devops_k9s_deb_url: https://github.com/derailed/k9s/releases/latest/download/k9s_linux_amd64.deb
+
+# Chemins des exécutables, utilisés par verify.yml.
+devops_docker_path: /usr/bin/docker
+devops_docker_compose_plugin_path: /usr/libexec/docker/cli-plugins/docker-compose
+devops_buildah_path: /usr/bin/buildah
+devops_kubectl_path: /usr/bin/kubectl
+devops_helm_path: /usr/local/bin/helm
+devops_k9s_path: /usr/bin/k9s
+devops_minikube_path: /usr/bin/minikube
+devops_trivy_path: /usr/bin/trivy

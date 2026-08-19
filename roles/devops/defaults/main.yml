@@ -1,0 +1,8 @@
+---
+# Variables par défaut du rôle devops (cf. docs/roles/devops.md).
+
+# Installe Minikube. À désactiver si la machine ne se connecte qu'à un cluster distant.
+devops_install_minikube: true
+
+# Ajoute l'utilisateur au groupe docker, lui donnant un accès équivalent root sans sudo.
+devops_set_docker_group: true
