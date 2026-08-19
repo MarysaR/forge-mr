@@ -43,9 +43,10 @@ Responsabilité : outils de développement, uniquement.
 
 Contenu v0.0.1 :
 
-- Git
 - Node.js, installé via mise (cf. [ADR-0005](0005-gestionnaire-de-runtimes.md))
 - pnpm, installé via mise
+
+Git n'est pas installé par ce rôle : il est déjà fourni par le rôle `shell`, qui en a besoin comme prérequis technique à sa propre implémentation (clonage d'Oh My Zsh et de Powerlevel10k). Le rôle `development` s'appuie sur cette installation existante sans la dupliquer.
 
 Décisions figées :
 
